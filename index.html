@@ -32,15 +32,21 @@
                 class="bg-zinc-900 p-4 rounded border border-zinc-800 flex flex-row justify-between"
             >
                 <h2 class="font-extralight">gractwo.pl</h2>
-                <p class="text-yellow-400">¯\_(ツ)_/¯</p>
+                <p id="status-gractwo" class="text-yellow-400">...</p>
             </div>
             <div
                 class="bg-zinc-900 p-4 rounded border border-zinc-800 flex flex-row justify-between"
             >
                 <h2 class="font-extralight">arche.gractwo.pl</h2>
-                <p class="text-yellow-400">¯\_(ツ)_/¯</p>
+                <p id="status-arche" class="text-yellow-400">...</p>
             </div>
         </div>
+
+        <!--  -->
+
+        <div class="opacity-0 text-emerald-400"></div>
+        <div class="opacity-0 text-yellow-400"></div>
+        <div class="opacity-0 text-red-400"></div>
 
         <!--  -->
 
@@ -50,5 +56,53 @@
                 statically via GitHub Pages.
             </p>
         </div>
+
+        <script defer>
+            const services = [
+                {
+                    name: "gractwo",
+                    url: "https://gractwo.pl",
+                    elementId: "status-gractwo",
+                },
+                {
+                    name: "arche",
+                    url: "https://arche.gractwo.pl",
+                    elementId: "status-arche",
+                },
+            ];
+
+            function updateStatus(el, status, colorClass) {
+                el.textContent = status;
+                el.className = colorClass;
+            }
+
+            async function checkService(service) {
+                const el = document.getElementById(service.elementId);
+                try {
+                    await fetch(service.url, {
+                        method: "HEAD",
+                        mode: "no-cors",
+                    });
+                    updateStatus(el, "¯\\_(ツ)_/¯", "text-emerald-400");
+                } catch {
+                    updateStatus(el, "Unreachable", "text-red-400");
+                }
+            }
+
+            function refreshStatuses() {
+                services.forEach(checkService);
+            }
+            refreshStatuses();
+
+            let seconds = 30;
+            const secondsLeft = document.getElementById("secondsleft");
+            setInterval(() => {
+                seconds--;
+                if (seconds <= 0) seconds = 30;
+                secondsLeft.textContent = seconds;
+
+                if (seconds == 30) refreshStatuses();
+            }, 1000);
+        </script>
     </body>
 </html>
